@@ -9,16 +9,18 @@ import axios from '../axios';
 import { Post } from '../components/Post';
 import { TagsBlock } from '../components/TagsBlock';
 import { CommentsBlock } from '../components/CommentsBlock';
-import { fetchPosts } from '../redux/slices/Posts';
+import { fetchPosts, fetchTags } from '../redux/slices/Posts';
 
 export const Home = () => {
     const dispatch = useDispatch();
     const { posts, tags } = useSelector((state) => state.posts); // state.posts -> posts - редьюсер
 
     const isPostsLoading = posts.status === 'loading';
+    const isTagsLoading = tags.status === 'loading';
 
     useEffect(() => {
         dispatch(fetchPosts());
+        dispatch(fetchTags());
     }, []);
     return (
         <>
@@ -52,10 +54,12 @@ export const Home = () => {
                     )}
                 </Grid>
                 <Grid xs={4} item>
-                    <TagsBlock
-                        items={['react', 'typescript', 'заметки']}
-                        isLoading={false}
-                    />
+                    {isTagsLoading ? (
+                        <TagsBlock isLoading={true} />
+                    ) : (
+                        <TagsBlock items={tags.items} isLoading={false} />
+                    )}
+
                     <CommentsBlock
                         items={[
                             {
