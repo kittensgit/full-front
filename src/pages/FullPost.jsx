@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 
 import axios from '../axios';
 
-import { Post } from '../components/Post';
+import { Post } from '../components/Post/Post';
 import { Index } from '../components/AddComment';
 import { CommentsBlock } from '../components/CommentsBlock';
 
@@ -24,7 +24,7 @@ export const FullPost = () => {
                 console.warn(err);
                 alert('Failed to get article');
             });
-    }, []);
+    }, [id]);
 
     if (isLoading) {
         return <Post isLoading={isLoading} isFullPost />;

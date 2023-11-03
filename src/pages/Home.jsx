@@ -1,17 +1,19 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Grid from '@mui/material/Grid';
-
-import { Post } from '../components/Post';
+import { Post } from '../components/Post/Post';
 import { TagsBlock } from '../components/TagsBlock';
 import { CommentsBlock } from '../components/CommentsBlock';
+
 import { fetchPosts, fetchTags } from '../redux/slices/posts';
 
 export const Home = () => {
     const dispatch = useDispatch();
     const { posts, tags } = useSelector((state) => state.posts); // state.posts -> posts - редьюсер
+    const { data } = useSelector((state) => state.auth);
 
     const isPostsLoading = posts.status === 'loading';
     const isTagsLoading = tags.status === 'loading';
@@ -46,7 +48,9 @@ export const Home = () => {
                                     viewsCount={obj.viewsCount}
                                     commentsCount={3}
                                     tags={obj.tags}
-                                    isEditable
+                                    isEditable={
+                                        data?.userData._id === obj.user._id
+                                    }
                                 />
                             )
                     )}
