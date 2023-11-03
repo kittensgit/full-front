@@ -1,17 +1,17 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
-import { Navigate } from 'react-router-dom';
-
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
+import Avatar from '@mui/material/Avatar';
 
-import styles from './Login.module.scss';
-import { fetchAuth, selectIsAuth } from '../../redux/slices/auth';
+import styles from './Registration.module.scss';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchRegister, selectIsAuth } from '../../redux/slices/auth';
+import { useForm } from 'react-hook-form';
+import { Navigate } from 'react-router-dom';
 
-export const Login = () => {
+export const Registration = () => {
     const isAuth = useSelector(selectIsAuth);
     const dispatch = useDispatch();
 
@@ -22,6 +22,7 @@ export const Login = () => {
         formState: { errors, isValid },
     } = useForm({
         defaultValues: {
+            fullName: '',
             email: '',
             password: '',
         },
@@ -29,9 +30,9 @@ export const Login = () => {
     });
 
     const onSubmit = async (values) => {
-        const data = await dispatch(fetchAuth(values));
+        const data = await dispatch(fetchRegister(values));
         if (!data.payload) {
-            return alert('Failed to login');
+            return alert('Failed to register');
         }
         if ('token' in data.payload) {
             window.localStorage.setItem('token', data.payload.token);
@@ -45,9 +46,20 @@ export const Login = () => {
     return (
         <Paper classes={{ root: styles.root }}>
             <Typography classes={{ root: styles.title }} variant="h5">
-                Вход в аккаунт
+                Создание аккаунта
             </Typography>
+            <div className={styles.avatar}>
+                <Avatar sx={{ width: 100, height: 100 }} />
+            </div>
             <form onSubmit={handleSubmit(onSubmit)}>
+                <TextField
+                    className={styles.field}
+                    label="Полное имя"
+                    fullWidth
+                    helperText={errors.fullName?.message}
+                    error={Boolean(errors.fullName?.message)}
+                    {...register('fullName', { required: 'Enter full name' })}
+                />
                 <TextField
                     className={styles.field}
                     label="E-Mail"
@@ -68,11 +80,11 @@ export const Login = () => {
                 <Button
                     disabled={!isValid}
                     type="submit"
-                    variant="contained"
                     size="large"
+                    variant="contained"
                     fullWidth
                 >
-                    Войти
+                    Зарегистрироваться
                 </Button>
             </form>
         </Paper>
