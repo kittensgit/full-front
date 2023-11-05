@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { selectIsAuth } from '../../redux/slices/auth';
-import { Navigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 
 import axios from '../../axios';
 
@@ -14,7 +14,9 @@ import 'easymde/dist/easymde.min.css';
 import styles from './AddPost.module.scss';
 
 export const AddPost = () => {
-    const [value, setValue] = useState('');
+    const navigate = useNavigate();
+
+    const [text, setText] = useState('');
     const [title, setTitle] = useState('');
     const [tags, setTags] = useState('');
     const [imageUrl, setImageUrl] = useState('');
@@ -24,6 +26,7 @@ export const AddPost = () => {
 
     const isAuth = useSelector(selectIsAuth);
 
+    //загрузка изображения на сервер
     const handleChangeFile = async (e) => {
         try {
             const formData = new FormData();
@@ -44,7 +47,7 @@ export const AddPost = () => {
     };
 
     const onChange = React.useCallback((value) => {
-        setValue(value);
+        setText(value);
     }, []);
 
     const options = React.useMemo(
@@ -62,7 +65,25 @@ export const AddPost = () => {
         []
     );
 
-    const onSubmit = async () => {};
+    const onSubmit = async () => {
+        try {
+            setIsLoading(true);
+
+            const fields = {
+                title,
+                text,
+                tags: tags.split(','),
+                imageUrl,
+            };
+
+            const { data } = await axios.post('/posts', fields);
+
+            navigate(`/posts/${data._id}`);
+        } catch (error) {
+            console.warn(error);
+            alert('Failed to post article');
+        }
+    };
 
     if (!window.localStorage.getItem('token') && !isAuth) {
         return <Navigate to="/" />;
@@ -119,7 +140,7 @@ export const AddPost = () => {
             />
             <SimpleMDE
                 className={styles.editor}
-                value={value}
+                value={text}
                 onChange={onChange}
                 options={options}
             />
