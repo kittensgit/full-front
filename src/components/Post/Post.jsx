@@ -28,6 +28,7 @@ export const Post = ({
     isLoading,
     isEditable,
 }) => {
+    console.log(isFullPost);
     const dispatch = useDispatch();
 
     if (isLoading) {
