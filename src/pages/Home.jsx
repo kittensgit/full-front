@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Tabs from '@mui/material/Tabs';
@@ -8,7 +8,11 @@ import { Post } from '../components/Post/Post';
 import { TagsBlock } from '../components/TagsBlock';
 import { CommentsBlock } from '../components/CommentsBlock';
 
-import { fetchPosts, fetchTags } from '../redux/slices/posts';
+import {
+    fetchPopularPosts,
+    fetchPosts,
+    fetchTags,
+} from '../redux/slices/posts';
 
 export const Home = () => {
     const dispatch = useDispatch();
@@ -18,19 +22,26 @@ export const Home = () => {
     const isPostsLoading = posts.status === 'loading';
     const isTagsLoading = tags.status === 'loading';
 
+    const [activeTab, setActiveTab] = useState('new');
+
     useEffect(() => {
-        dispatch(fetchPosts());
-        dispatch(fetchTags());
-    }, []);
+        if (activeTab === 'new') {
+            dispatch(fetchPosts());
+            dispatch(fetchTags());
+        } else {
+            dispatch(fetchPopularPosts());
+        }
+    }, [activeTab]);
     return (
         <>
             <Tabs
+                value={activeTab}
+                onChange={(_, newValue) => setActiveTab(newValue)}
                 style={{ marginBottom: 15 }}
-                value={0}
                 aria-label="basic tabs example"
             >
-                <Tab label="Новые" />
-                <Tab label="Популярные" />
+                <Tab label="Новые" value={'new'} />
+                <Tab label="Популярные" value={'popular'} />
             </Tabs>
             <Grid container spacing={4}>
                 <Grid xs={8} item>
@@ -39,22 +50,27 @@ export const Home = () => {
                             isPostsLoading ? (
                                 <Post key={index} isLoading={true} />
                             ) : (
-                                <Post
-                                    id={obj._id}
-                                    title={obj.title}
-                                    imageUrl={obj.imageUrl}
-                                    user={obj.user}
-                                    createdAt={obj.createdAt}
-                                    viewsCount={obj.viewsCount}
-                                    commentsCount={3}
-                                    tags={obj.tags}
-                                    isEditable={
-                                        data?.userData._id === obj.user._id
-                                    }
-                                />
+                                (activeTab === 'new' ||
+                                    activeTab === 'popular') && (
+                                    <Post
+                                        key={obj._id}
+                                        id={obj._id}
+                                        title={obj.title}
+                                        imageUrl={obj.imageUrl}
+                                        user={obj.user}
+                                        createdAt={obj.createdAt}
+                                        viewsCount={obj.viewsCount}
+                                        commentsCount={3}
+                                        tags={obj.tags}
+                                        isEditable={
+                                            data?.userData._id === obj.user._id
+                                        }
+                                    />
+                                )
                             )
                     )}
                 </Grid>
+
                 <Grid xs={4} item>
                     {isTagsLoading ? (
                         <TagsBlock isLoading={true} />

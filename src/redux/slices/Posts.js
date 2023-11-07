@@ -5,6 +5,13 @@ export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
     const { data } = await axios.get('/posts');
     return data;
 });
+export const fetchPopularPosts = createAsyncThunk(
+    'posts/fetchPopularPosts',
+    async () => {
+        const { data } = await axios.get('/posts/popular');
+        return data;
+    }
+);
 export const fetchTags = createAsyncThunk('posts/fetchTags', async () => {
     const { data } = await axios.get('/tags');
     return data;
@@ -30,6 +37,7 @@ const postsSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: {
+        // получение постов(новых)
         [fetchPosts.pending]: (state) => {
             state.posts.items = [];
             state.posts.status = 'loading';
@@ -42,6 +50,20 @@ const postsSlice = createSlice({
             state.posts.items = [];
             state.posts.status = 'error';
         },
+        // получение популярных постов
+        [fetchPopularPosts.pending]: (state) => {
+            state.posts.items = [];
+            state.posts.status = 'loading';
+        },
+        [fetchPopularPosts.fulfilled]: (state, action) => {
+            state.posts.items = action.payload;
+            state.posts.status = 'loaded';
+        },
+        [fetchPopularPosts.rejected]: (state) => {
+            state.posts.items = [];
+            state.posts.status = 'error';
+        },
+        // получение тегов
         [fetchTags.pending]: (state) => {
             state.tags.items = [];
             state.tags.status = 'loading';
@@ -54,6 +76,7 @@ const postsSlice = createSlice({
             state.tags.items = [];
             state.tags.status = 'error';
         },
+        // удаление поста
         [fetchRemovePost.pending]: (state, action) => {
             state.posts.items = state.posts.items.filter(
                 (post) => post._id !== action.meta.arg
