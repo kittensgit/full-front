@@ -1,7 +1,7 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { selectIsAuth } from '../../redux/slices/auth';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useNavigate, Navigate, useParams } from 'react-router-dom';
 
 import axios from '../../axios';
 
@@ -15,6 +15,7 @@ import styles from './AddPost.module.scss';
 
 export const AddPost = () => {
     const navigate = useNavigate();
+    const { id } = useParams();
 
     const [text, setText] = useState('');
     const [title, setTitle] = useState('');
@@ -25,6 +26,7 @@ export const AddPost = () => {
     const inputFileRef = useRef(null);
 
     const isAuth = useSelector(selectIsAuth);
+    const isEditing = Boolean(id);
 
     //загрузка изображения на сервер
     const handleChangeFile = async (e) => {
@@ -48,6 +50,23 @@ export const AddPost = () => {
 
     const onChange = React.useCallback((value) => {
         setText(value);
+    }, []);
+
+    useEffect(() => {
+        if (id) {
+            axios
+                .get(`/posts/${id}`)
+                .then(({ data }) => {
+                    setTitle(data.title);
+                    setTags(data.tags.join(','));
+                    setText(data.text);
+                    setImageUrl(data.imageUrl);
+                })
+                .catch((err) => {
+                    console.warn(err);
+                    alert('failed to get article');
+                });
+        }
     }, []);
 
     const options = React.useMemo(
@@ -76,9 +95,13 @@ export const AddPost = () => {
                 imageUrl,
             };
 
-            const { data } = await axios.post('/posts', fields);
+            const { data } = isEditing
+                ? await axios.patch(`posts/${id}`, fields)
+                : await axios.post('/posts', fields);
 
-            navigate(`/posts/${data._id}`);
+            const _id = isEditing ? id : data._id;
+
+            navigate(`/posts/${_id}`);
         } catch (error) {
             console.warn(error);
             alert('Failed to post article');
@@ -146,7 +169,7 @@ export const AddPost = () => {
             />
             <div className={styles.buttons}>
                 <Button onClick={onSubmit} size="large" variant="contained">
-                    Опубликовать
+                    {isEditing ? 'Сохранить' : 'Опубликовать'}
                 </Button>
                 <a href="/">
                     <Button size="large">Отмена</Button>
