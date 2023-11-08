@@ -37,20 +37,20 @@ export const Home = () => {
         } else {
             dispatch(fetchPopularPosts());
         }
-    }, [activeTab]);
+    }, [activeTab, dispatch]);
 
     useEffect(() => {
         if (tag) {
             dispatch(fetchPostsByTag(tag));
         }
-    }, [tag]);
+    }, [tag, dispatch]);
 
     useEffect(() => {
         const currentPath = location.pathname;
         if (currentPath === '/') {
             dispatch(fetchPosts());
         }
-    }, [location]);
+    }, [location, dispatch]);
 
     const uniqueTags = Array.from(new Set(tags.items));
 
