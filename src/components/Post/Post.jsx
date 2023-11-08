@@ -28,7 +28,6 @@ export const Post = ({
     isLoading,
     isEditable,
 }) => {
-    console.log(isFullPost);
     const dispatch = useDispatch();
 
     if (isLoading) {
@@ -81,7 +80,7 @@ export const Post = ({
                     <ul className={styles.tags}>
                         {tags.map((name) => (
                             <li key={name}>
-                                <Link to={`/tag/${name}`}>#{name}</Link>
+                                <Link to={`/tags/${name}`}>#{name}</Link>
                             </li>
                         ))}
                     </ul>

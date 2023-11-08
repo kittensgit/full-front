@@ -11,7 +11,7 @@ import Skeleton from '@mui/material/Skeleton';
 import { SideBlock } from './SideBlock';
 import { Link } from 'react-router-dom';
 
-export const TagsBlock = ({ setTag, items, isLoading = true }) => {
+export const TagsBlock = ({ items, isLoading }) => {
     return (
         <SideBlock title="Тэги">
             <List>
@@ -28,10 +28,7 @@ export const TagsBlock = ({ setTag, items, isLoading = true }) => {
                                 {isLoading ? (
                                     <Skeleton width={100} />
                                 ) : (
-                                    <ListItemText
-                                        onClick={() => setTag(name)}
-                                        primary={name}
-                                    />
+                                    <ListItemText primary={name} />
                                 )}
                             </ListItemButton>
                         </ListItem>

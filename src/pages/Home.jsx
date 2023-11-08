@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useParams } from 'react-router-dom';
 
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -11,23 +12,23 @@ import { CommentsBlock } from '../components/CommentsBlock';
 import {
     fetchPopularPosts,
     fetchPosts,
+    fetchPostsByTag,
     fetchTags,
 } from '../redux/slices/posts';
 
 export const Home = () => {
     const dispatch = useDispatch();
+    const location = useLocation();
+
     const { posts, tags } = useSelector((state) => state.posts); // state.posts -> posts - редьюсер
     const { data } = useSelector((state) => state.auth);
+
+    const { tag } = useParams();
 
     const isPostsLoading = posts.status === 'loading';
     const isTagsLoading = tags.status === 'loading';
 
     const [activeTab, setActiveTab] = useState('new');
-
-    const [tag, setTag] = useState(null);
-    const changeTag = (text) => {
-        setTag(text);
-    };
 
     useEffect(() => {
         if (activeTab === 'new') {
@@ -37,10 +38,24 @@ export const Home = () => {
             dispatch(fetchPopularPosts());
         }
     }, [activeTab]);
+
+    useEffect(() => {
+        if (tag) {
+            dispatch(fetchPostsByTag(tag));
+        }
+    }, [tag]);
+
+    useEffect(() => {
+        const currentPath = location.pathname;
+        if (currentPath === '/') {
+            dispatch(fetchPosts());
+        }
+    }, [location]);
+
     return (
         <>
             {tag ? (
-                <h1>Tags</h1>
+                <h1>{tag}</h1>
             ) : (
                 <Tabs
                     value={activeTab}
@@ -54,47 +69,38 @@ export const Home = () => {
             )}
 
             <Grid container spacing={4}>
-                {tag ? (
-                    <div>Posts</div>
-                ) : (
-                    <Grid xs={8} item>
-                        {(isPostsLoading ? [...Array(5)] : posts.items).map(
-                            (obj, index) =>
-                                isPostsLoading ? (
-                                    <Post key={index} isLoading={true} />
-                                ) : (
-                                    (activeTab === 'new' ||
-                                        activeTab === 'popular') && (
-                                        <Post
-                                            key={obj._id}
-                                            id={obj._id}
-                                            title={obj.title}
-                                            imageUrl={obj.imageUrl}
-                                            user={obj.user}
-                                            createdAt={obj.createdAt}
-                                            viewsCount={obj.viewsCount}
-                                            commentsCount={3}
-                                            tags={obj.tags}
-                                            isEditable={
-                                                data?.userData._id ===
-                                                obj.user._id
-                                            }
-                                        />
-                                    )
+                <Grid xs={8} item>
+                    {(isPostsLoading ? [...Array(5)] : posts.items).map(
+                        (obj, index) =>
+                            isPostsLoading ? (
+                                <Post key={index} isLoading={true} />
+                            ) : (
+                                (activeTab === 'new' ||
+                                    activeTab === 'popular') && (
+                                    <Post
+                                        key={obj._id}
+                                        id={obj._id}
+                                        title={obj.title}
+                                        imageUrl={obj.imageUrl}
+                                        user={obj.user}
+                                        createdAt={obj.createdAt}
+                                        viewsCount={obj.viewsCount}
+                                        commentsCount={3}
+                                        tags={obj.tags}
+                                        isEditable={
+                                            data?.userData._id === obj.user._id
+                                        }
+                                    />
                                 )
-                        )}
-                    </Grid>
-                )}
+                            )
+                    )}
+                </Grid>
 
                 <Grid xs={4} item>
                     {isTagsLoading ? (
                         <TagsBlock isLoading={true} />
                     ) : (
-                        <TagsBlock
-                            items={tags.items}
-                            setTag={changeTag}
-                            isLoading={false}
-                        />
+                        <TagsBlock items={tags.items} isLoading={false} />
                     )}
 
                     <CommentsBlock
