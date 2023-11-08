@@ -52,6 +52,8 @@ export const Home = () => {
         }
     }, [location]);
 
+    const uniqueTags = Array.from(new Set(tags.items));
+
     return (
         <>
             {tag ? (
@@ -100,7 +102,7 @@ export const Home = () => {
                     {isTagsLoading ? (
                         <TagsBlock isLoading={true} />
                     ) : (
-                        <TagsBlock items={tags.items} isLoading={false} />
+                        <TagsBlock items={uniqueTags} isLoading={false} />
                     )}
 
                     <CommentsBlock
