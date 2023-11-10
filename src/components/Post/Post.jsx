@@ -21,7 +21,7 @@ export const Post = ({
     imageUrl,
     user,
     viewsCount,
-    commentsCount,
+    commentCount,
     tags,
     children,
     isFullPost,
@@ -94,7 +94,7 @@ export const Post = ({
                         </li>
                         <li>
                             <CommentIcon />
-                            <span>{commentsCount}</span>
+                            <span>{commentCount}</span>
                         </li>
                     </ul>
                 </div>

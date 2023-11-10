@@ -27,10 +27,17 @@ export const fetchRemovePost = createAsyncThunk(
     'posts/fetchRemovePost',
     async (id) => await axios.delete(`/posts/${id}`)
 );
-export const fetchComments = createAsyncThunk(
-    'posts/fetchComments',
+export const fetchPostComments = createAsyncThunk(
+    'posts/fetchPostComments',
     async (id) => {
         const { data } = await axios.get(`/posts/${id}/comments`);
+        return data;
+    }
+);
+export const fetchComments = createAsyncThunk(
+    'posts/fetchComments',
+    async () => {
+        const { data } = await axios.get('/comments');
         return data;
     }
 );
@@ -124,15 +131,15 @@ const postsSlice = createSlice({
             );
         },
         // получение comments
-        [fetchComments.pending]: (state) => {
+        [fetchPostComments.pending]: (state) => {
             state.comments.items = [];
             state.comments.status = 'loading';
         },
-        [fetchComments.fulfilled]: (state, action) => {
+        [fetchPostComments.fulfilled]: (state, action) => {
             state.comments.items = action.payload;
             state.comments.status = 'loaded';
         },
-        [fetchComments.rejected]: (state) => {
+        [fetchPostComments.rejected]: (state) => {
             state.comments.items = [];
             state.comments.status = 'error';
         },
@@ -146,6 +153,19 @@ const postsSlice = createSlice({
             state.comments.status = 'loaded';
         },
         [fetchAddComments.rejected]: (state) => {
+            state.comments.items = [];
+            state.comments.status = 'error';
+        },
+        //  get comments
+        [fetchComments.pending]: (state) => {
+            state.comments.items = [];
+            state.comments.status = 'loading';
+        },
+        [fetchComments.fulfilled]: (state, action) => {
+            state.comments.items = action.payload;
+            state.comments.status = 'loaded';
+        },
+        [fetchComments.rejected]: (state) => {
             state.comments.items = [];
             state.comments.status = 'error';
         },

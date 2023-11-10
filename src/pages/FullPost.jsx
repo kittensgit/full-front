@@ -8,7 +8,7 @@ import { AddComment } from '../components/AddComment/AddComment';
 import { CommentsBlock } from '../components/CommentsBlock';
 import ReactMarkdown from 'react-markdown';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchComments } from '../redux/slices/posts';
+import { fetchPostComments } from '../redux/slices/posts';
 
 export const FullPost = () => {
     const dispatch = useDispatch();
@@ -20,22 +20,18 @@ export const FullPost = () => {
     const { id } = useParams();
 
     useEffect(() => {
-        console.log('Fetching post data...');
         axios
             .get(`/posts/${id}`)
             .then((res) => {
-                console.log('Received post data:', res.data);
                 setData(res.data);
                 setIsLoading(false);
-                dispatch(fetchComments(id)); // Вызываем fetchComments после получения поста
+                dispatch(fetchPostComments(id));
             })
             .catch((err) => {
                 console.warn(err);
                 alert('Failed to get article');
             });
-    }, [id, dispatch]); // Убрали comments из зависимостей
-
-    console.log('Comments in render:', comments);
+    }, [id, dispatch]);
 
     if (isLoading) {
         return <Post isLoading={isLoading} isFullPost />;
@@ -50,7 +46,7 @@ export const FullPost = () => {
                 user={data.user}
                 createdAt={data.createdAt}
                 viewsCount={data.viewsCount}
-                commentsCount={data.commentCount}
+                commentCount={data.commentCount}
                 tags={data.tags}
                 isFullPost
             >

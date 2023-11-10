@@ -10,6 +10,7 @@ import { TagsBlock } from '../components/TagsBlock';
 import { CommentsBlock } from '../components/CommentsBlock';
 
 import {
+    fetchComments,
     fetchPopularPosts,
     fetchPosts,
     fetchPostsByTag,
@@ -20,7 +21,7 @@ export const Home = () => {
     const dispatch = useDispatch();
     const location = useLocation();
 
-    const { posts, tags } = useSelector((state) => state.posts); // state.posts -> posts - редьюсер
+    const { posts, tags, comments } = useSelector((state) => state.posts); // state.posts -> posts - редьюсер
     const { data } = useSelector((state) => state.auth);
 
     const { tag } = useParams();
@@ -37,6 +38,7 @@ export const Home = () => {
         } else {
             dispatch(fetchPopularPosts());
         }
+        dispatch(fetchComments());
     }, [activeTab, dispatch]);
 
     useEffect(() => {
@@ -87,7 +89,7 @@ export const Home = () => {
                                         user={obj.user}
                                         createdAt={obj.createdAt}
                                         viewsCount={obj.viewsCount}
-                                        commentsCount={3}
+                                        commentCount={obj.commentCount}
                                         tags={obj.tags}
                                         isEditable={
                                             data?.userData._id === obj.user._id
@@ -105,27 +107,16 @@ export const Home = () => {
                         <TagsBlock items={uniqueTags} isLoading={false} />
                     )}
 
-                    <CommentsBlock
-                        items={[
-                            {
-                                user: {
-                                    fullName: 'Вася Пупкин',
-                                    avatarUrl:
-                                        'https://mui.com/static/images/avatar/1.jpg',
-                                },
-                                text: 'Это тестовый комментарий',
-                            },
-                            {
-                                user: {
-                                    fullName: 'Иван Иванов',
-                                    avatarUrl:
-                                        'https://mui.com/static/images/avatar/2.jpg',
-                                },
-                                text: 'When displaying three lines or more, the avatar is not aligned at the top. You should set the prop to align the avatar at the top',
-                            },
-                        ]}
-                        isLoading={false}
-                    />
+                    {comments && comments.status !== 'loading' ? (
+                        <CommentsBlock
+                            items={
+                                comments.items?.comments || comments.items || []
+                            }
+                            isLoading={false}
+                        />
+                    ) : (
+                        <CommentsBlock isLoading={true} />
+                    )}
                 </Grid>
             </Grid>
         </>

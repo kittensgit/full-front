@@ -23,6 +23,7 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/posts/:id" element={<FullPost />} />
                     <Route path="/posts/:id/comments" element={<FullPost />} />
+                    <Route path="/comments" element={<FullPost />} />
                     <Route path="/posts/:id/edit" element={<AddPost />} />
                     <Route path="/tags/:tag" element={<Home />} />
                     <Route path="/add-post" element={<AddPost />} />
