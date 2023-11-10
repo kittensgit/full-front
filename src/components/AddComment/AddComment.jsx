@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
 import styles from './AddComment.module.scss';
 
@@ -7,7 +8,6 @@ import TextField from '@mui/material/TextField';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 
-import { useDispatch } from 'react-redux';
 import { fetchAddComments } from '../../redux/slices/posts';
 
 export const AddComment = ({ user }) => {

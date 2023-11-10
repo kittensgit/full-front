@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 
 import axios from '../axios';
+import { fetchPostComments } from '../redux/slices/posts';
 
 import { Post } from '../components/Post/Post';
 import { AddComment } from '../components/AddComment/AddComment';
 import { CommentsBlock } from '../components/CommentsBlock';
 import ReactMarkdown from 'react-markdown';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchPostComments } from '../redux/slices/posts';
 
 export const FullPost = () => {
     const dispatch = useDispatch();
     const { comments } = useSelector((state) => state.posts);
+    const { data } = useSelector((state) => state.auth);
 
-    const [data, setData] = useState([]);
+    const [postData, setPostData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
     const { id } = useParams();
@@ -23,7 +24,7 @@ export const FullPost = () => {
         axios
             .get(`/posts/${id}`)
             .then((res) => {
-                setData(res.data);
+                setPostData(res.data);
                 setIsLoading(false);
                 dispatch(fetchPostComments(id));
             })
@@ -40,17 +41,17 @@ export const FullPost = () => {
     return (
         <>
             <Post
-                id={data._id}
-                title={data.title}
-                imageUrl={data.imageUrl}
-                user={data.user}
-                createdAt={data.createdAt}
-                viewsCount={data.viewsCount}
-                commentCount={data.commentCount}
-                tags={data.tags}
+                id={postData._id}
+                title={postData.title}
+                imageUrl={postData.imageUrl}
+                user={postData.user}
+                createdAt={postData.createdAt}
+                viewsCount={postData.viewsCount}
+                commentCount={postData.commentCount}
+                tags={postData.tags}
                 isFullPost
             >
-                <ReactMarkdown children={data.text} />
+                <ReactMarkdown children={postData.text} />
             </Post>
 
             {comments && comments.status !== 'loading' ? (
@@ -58,11 +59,11 @@ export const FullPost = () => {
                     items={comments.items?.comments || comments.items || []}
                     isLoading={false}
                 >
-                    <AddComment user={data.user} />
+                    <AddComment user={data.userData} />
                 </CommentsBlock>
             ) : (
                 <CommentsBlock isLoading={true}>
-                    <AddComment user={data.user} />
+                    <AddComment user={data.userData} />
                 </CommentsBlock>
             )}
         </>
