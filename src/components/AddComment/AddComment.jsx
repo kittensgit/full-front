@@ -35,7 +35,7 @@ export const AddComment = ({ user }) => {
             <div className={styles.root}>
                 <Avatar
                     classes={{ root: styles.avatar }}
-                    src={`http://localhost:2222${user.imageUrl}`}
+                    src={`http://localhost:2222${user.avatarUrl}`}
                 />
                 <div className={styles.form}>
                     <TextField

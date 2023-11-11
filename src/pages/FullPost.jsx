@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
+import ReactMarkdown from 'react-markdown';
+import Typography from '@mui/material/Typography';
+
 import axios from '../axios';
 import { fetchPostComments } from '../redux/slices/posts';
 
 import { Post } from '../components/Post/Post';
 import { AddComment } from '../components/AddComment/AddComment';
 import { CommentsBlock } from '../components/CommentsBlock';
-import ReactMarkdown from 'react-markdown';
 
 export const FullPost = () => {
     const dispatch = useDispatch();
@@ -53,18 +55,27 @@ export const FullPost = () => {
             >
                 <ReactMarkdown children={postData.text} />
             </Post>
-
             {comments && comments.status !== 'loading' ? (
                 <CommentsBlock
                     items={comments.items?.comments || comments.items || []}
                     isLoading={false}
                 >
-                    <AddComment user={data.userData} />
+                    {data ? (
+                        <AddComment user={data?.userData} />
+                    ) : (
+                        <Typography
+                            textAlign={'center'}
+                            variant="h6"
+                            color={'rgba(0, 0, 0, 0.6)'}
+                            pt={3}
+                            pb={3}
+                        >
+                            *If you want to send a message, you must to auth
+                        </Typography>
+                    )}
                 </CommentsBlock>
             ) : (
-                <CommentsBlock isLoading={true}>
-                    <AddComment user={data.userData} />
-                </CommentsBlock>
+                <CommentsBlock isLoading={true} />
             )}
         </>
     );

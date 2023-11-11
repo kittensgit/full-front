@@ -1,6 +1,8 @@
 import React from 'react';
 import styles from './UserInfo.module.scss';
 
+import Avatar from '@mui/material/Avatar';
+
 export const UserInfo = ({ avatarUrl, fullName, createdAt }) => {
     const dateObject = new Date(createdAt);
     const options = {
@@ -16,9 +18,10 @@ export const UserInfo = ({ avatarUrl, fullName, createdAt }) => {
 
     return (
         <div className={styles.root}>
-            <img
+            <Avatar
+                sx={{ width: '30px', height: '30px' }}
                 className={styles.avatar}
-                src={avatarUrl || '/noavatar.png'}
+                src={`http://localhost:2222${avatarUrl}`}
                 alt={fullName}
             />
             <div className={styles.userDetails}>

@@ -1,24 +1,47 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Navigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchRegister, selectIsAuth } from '../../redux/slices/auth';
+
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
 
 import styles from './Registration.module.scss';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchRegister, selectIsAuth } from '../../redux/slices/auth';
-import { useForm } from 'react-hook-form';
-import { Navigate } from 'react-router-dom';
+import AddAvatar from '../../components/AddAvatar/AddAvatar';
+
+import axios from '../../axios';
 
 export const Registration = () => {
+    const [avatarUrl, setAvatarUrl] = useState('');
+    const inputFileRef = useRef(null);
+
     const isAuth = useSelector(selectIsAuth);
     const dispatch = useDispatch();
+
+    const handleChangeFile = async (e) => {
+        try {
+            const formData = new FormData();
+            const file = e.target.files[0];
+            formData.append('image', file);
+            const { data } = await axios.post('/upload', formData);
+            console.log(data);
+            if (data) {
+                setAvatarUrl(data.url);
+            }
+        } catch (error) {
+            console.log(error);
+            alert('Failed to upload photo!');
+        }
+    };
 
     // react-hook-form
     const {
         register,
         handleSubmit,
+        setValue,
         formState: { errors, isValid },
     } = useForm({
         defaultValues: {
@@ -28,6 +51,10 @@ export const Registration = () => {
         },
         mode: 'onChange',
     });
+
+    useEffect(() => {
+        setValue('avatarUrl', avatarUrl);
+    }, [avatarUrl, setValue]);
 
     const onSubmit = async (values) => {
         const data = await dispatch(fetchRegister(values));
@@ -49,7 +76,12 @@ export const Registration = () => {
                 Создание аккаунта
             </Typography>
             <div className={styles.avatar}>
-                <Avatar sx={{ width: 100, height: 100 }} />
+                <AddAvatar
+                    inputFileRef={inputFileRef}
+                    handleChangeFile={handleChangeFile}
+                    avatarUrl={avatarUrl}
+                    register={register}
+                />
             </div>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <TextField

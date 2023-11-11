@@ -25,8 +25,8 @@ export const CommentsBlock = ({ items, children, isLoading }) => {
                                     />
                                 ) : (
                                     <Avatar
+                                        src={`http://localhost:2222${obj.user.avatarUrl}`}
                                         alt={obj.user.fullName}
-                                        src={obj.user.avatarUrl}
                                     />
                                 )}
                             </ListItemAvatar>

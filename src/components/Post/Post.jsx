@@ -11,7 +11,7 @@ import EyeIcon from '@mui/icons-material/RemoveRedEyeOutlined';
 import CommentIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 
 import styles from './Post.module.scss';
-import { UserInfo } from '../UserInfo';
+import { UserInfo } from '../UserInfo/UserInfo';
 import { PostSkeleton } from './Skeleton';
 
 export const Post = ({
@@ -29,7 +29,6 @@ export const Post = ({
     isEditable,
 }) => {
     const dispatch = useDispatch();
-
     if (isLoading) {
         return <PostSkeleton />;
     }
